@@ -110,12 +110,3 @@ Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts (HNS
 - Keep your Excel input columns consistent with the example scripts. If your column names differ, change the `read_excel` parsing code in the script or preprocess your data to match expected names.
 - HNSW-based fuzzy retrieval works best when you normalize or standardize feature vectors prior to building the index.
 
-## Contributing
-
-Contributions are welcome. If you plan to add features or fix issues, please open an issue describing the change before submitting a pull request so we can discuss design and compatibility.
-
-## License & contact
-
-This repository does not include an explicit license file. If you intend to reuse the code, please contact the repository owner (nameshou) or add a LICENSE file to clarify permissions.
-
-For questions or help, open an issue or contact the owner via GitHub.
