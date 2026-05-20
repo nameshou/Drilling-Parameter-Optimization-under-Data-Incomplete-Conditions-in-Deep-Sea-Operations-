@@ -1,16 +1,19 @@
-# Quick experiment: run the built-in TOPSIS example
+"""
+quick_experiment.py (DEPRECATED)
 
-This quick experiment runs the existing TOPSIS example in `topsis.py` to produce
-ranking outputs and radar chart images. It uses a subprocess to execute the
-script so it behaves the same as running `python topsis.py`.
+This file has been deprecated and replaced by quicktest.py as the project's quick test/driver script.
+Please run `python quicktest.py` instead.
 
-Usage:
+The README has been updated to mark quicktest.py as the recommended quick test file and to include the data source link.
+"""
 
-    python quick_experiment.py
+import sys
+import warnings
 
-Notes:
-- This script assumes you have installed the repository dependencies (see
-  README.md) and that `python` on your PATH points to the desired Python
-  interpreter.
-- The script simply runs the `topsis.py` example (which does not require
-  external Excel files) and prints the script output to the console.
+warnings.warn(
+    "quick_experiment.py is deprecated. Use 'python quicktest.py' for quick tests. See README.md for details.",
+    DeprecationWarning,
+)
+
+print("quick_experiment.py is deprecated. Run: python quicktest.py")
+sys.exit(0)
