@@ -1,6 +1,6 @@
 # Drilling Parameter Optimization under Data-Incomplete Conditions in Deep-Sea Operations
 
-This repository provides a hybrid framework that combines historical case retrieval and conditional generation to support drilling-parameter optimization when operational data are incomplete or partially observed. The code is intended for research and prototyping: it contains retrieval, generative, and multi-criteria evaluation modules along with small example drivers to demonstrate end-to-end flows.
+This repository provides a hybrid framework that combines historical case retrieval and conditional generation to support drilling-parameter optimization when operational data are incomplete or par[...]
 
 ## Highlights
 
@@ -30,10 +30,14 @@ This repository provides a hybrid framework that combines historical case retrie
 - PGM-Index.py
   - An experimental learned-index (PGM-index) utility used for efficient lookup or auxiliary indexing in some retrieval flows.
 
-- quick_experiment.py and quicktest.py
-  - Small driver scripts that run short end-to-end checks (TOPSIS quick test, example retrieval flows). Use these to verify environment and dependencies.
+- quicktest.py
+  - Small driver script that runs short end-to-end checks (TOPSIS quick test, example retrieval flows). Use this to verify environment and dependencies. (quick_experiment.py deprecated - see note below)
 
 - README.md (this file)
+
+## Data source
+
+The dataset and related materials used in this project are available from the OGS research repository: https://ricerca.ogs.it/handle/20.500.14083/44943
 
 ## Dependencies
 
@@ -61,14 +65,14 @@ pip install hnswlib
 
 ## Data format / expected inputs
 
-Most example scripts read from Excel (.xlsx) files. Expected layout is a tabular dataset where each row is a historical case and columns correspond to engineering/drilling parameters and measured responses. Typical columns used across scripts include (but are not limited to):
+Most example scripts read from Excel (.xlsx) files. Expected layout is a tabular dataset where each row is a historical case and columns correspond to engineering/drilling parameters and measured [...]
 
 - identifiers (case ID, timestamp)
 - input / control parameters (e.g., weight on bit, rotary speed, pump rate)
 - measured observations and responses (e.g., penetration rate, torque, vibration metrics)
 - mask or missing-value indicators (NaN is used to indicate missing values in examples)
 
-Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts (HNSW++-CHA.py, CDMsDDIM.py, topsis.py) to see how `excel_path` and column names are read. Modify those variables to match the column names in your Excel file.
+Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts (HNSW++-CHA.py, CDMsDDIM.py, topsis.py) to see how `excel_path` and column names are read. Modify those variables to mat[...]
 
 ## Quick start
 
@@ -107,6 +111,5 @@ Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts (HNS
 ## Notes and best practices
 
 - When working with the diffusion model, start with a small number of epochs and a small dataset to ensure the training loop runs correctly before scaling up.
-- Keep your Excel input columns consistent with the example scripts. If your column names differ, change the `read_excel` parsing code in the script or preprocess your data to match expected names.
+- Keep your Excel input columns consistent with the example scripts. If your column names differ, change the `read_excel` parsing code in the script or preprocess your data to match expected name[...]
 - HNSW-based fuzzy retrieval works best when you normalize or standardize feature vectors prior to building the index.
-
