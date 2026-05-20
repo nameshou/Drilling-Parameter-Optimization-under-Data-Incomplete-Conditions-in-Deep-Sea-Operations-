@@ -1,118 +1,99 @@
-# Drilling-Parameter-Optimization-under-Data-Incomplete-Conditions-in-Deep-Sea-Operations-
+# Drilling Parameter Optimization under Data-Incomplete Conditions in Deep-Sea Operations
 
-A Hybrid Framework Combining Historical Case Retrieval and Conditional Generation for Drilling Parameter Optimization under Data Incomplete Conditions in Deep-Sea Operations
+A hybrid framework combining historical case retrieval and conditional generation for drilling-parameter optimization when operational data are incomplete.
 
-## 简介
-本仓库实现了一个用于深海钻井参数优化的混合框架，包含：
+## Overview
 
-- 模糊检索子模块（基于 HNSW++ 分支索引）用于从历史方案中检索相似案例（HNSW++-CHA.py）。
-- 条件扩散生成子模块（基于改进扩散模型）用于在部分观测（缺失）条件下生成补全的钻井方案（CDMsDDIM.py）。
-- 多指标评价子模块（基于 AHP + 熵权 + TOPSIS）用于对方案进行打分与可视化（topsis.py）。
+This repository implements three main components:
 
-本仓库所有源文件均为独立的 Python 源文件（非压缩包），符合不上传压缩文件的要求。
+- `HNSW++-CHA.py` — a fuzzy retrieval module using an HNSW-based multi-branch index to find historical similar cases.
+- `CDMsDDIM.py` — a conditional diffusion generator that completes missing drilling parameters under partially observed conditions.
+- `topsis.py` — a multi-criteria evaluation module (AHP + entropy weighting + TOPSIS) with built-in example data and radar-plot visualization for quick testing.
 
-## 仓库结构（主要文件）
+All source code is provided as individual Python files (no compressed archives included).
 
-- `topsis.py`：AHP + 熵权 + TOPSIS 的实现，包含示例数据和雷达图可视化，适合作为快速测试用例（无需外部数据文件）。
-- `HNSW++-CHA.py`：基于 hnswlib 的分支 HNSW 索引与模糊匹配示例，示例代码在 `if __name__ == "__main__"` 中。该示例默认从本地 Excel 读取数据，请根据实际路径修改 `excel_path`。
-- `CDMsDDIM.py`：条件扩散生成器（训练 + 生成 + 测试），包含示例主函数。示例依赖 Excel 数据文件，请根据实际路径修改 `excel_path`。
-- `README.md`：本文件。
+## Dependencies
 
-## 依赖
+Recommended to use a virtual environment. Core Python packages:
 
-建议在虚拟环境中安装：
+- numpy
+- pandas
+- scikit-learn
+- matplotlib
+- openpyxl
+
+Optional / for specific features:
+
+- torch (for CDMsDDIM training / inference; choose the build appropriate for your CUDA/CPU environment)
+- hnswlib (for running HNSW++-based fuzzy retrieval)
+
+Example install commands:
 
 pip install numpy pandas scikit-learn matplotlib openpyxl
+pip install torch      # choose appropriate build for CUDA/CPU
+pip install hnswlib    # if you want to run HNSW++ examples
 
-对于扩散模型需要：
+## Quick start / Quick test
 
-pip install torch torchvision
-
-若要运行 HNSW 部分：
-
-pip install hnswlib
-
-（请根据你的 Python 和 CUDA 环境选择合适的 torch 版本：https://pytorch.org/ ）
-
-## 快速上手 / 快速测试
-
-1. 克隆仓库：
+1. Clone the repository:
 
    git clone https://github.com/nameshou/Drilling-Parameter-Optimization-under-Data-Incomplete-Conditions-in-Deep-Sea-Operations-.git
    cd Drilling-Parameter-Optimization-under-Data-Incomplete-Conditions-in-Deep-Sea-Operations-
 
-2. 创建并激活虚拟环境（可选但推荐）：
+2. (Optional) Create and activate a virtual environment:
 
    python -m venv .venv
-   source .venv/bin/activate  # Linux / macOS
-   .\.venv\\Scripts\\activate  # Windows PowerShell
+   # Linux / macOS
+   source .venv/bin/activate
+   # Windows (PowerShell)
+   .\.venv\\Scripts\\Activate.ps1
 
-3. 安装依赖（示例）：
+3. Install dependencies (example):
 
-   pip install -r requirements.txt
+   pip install numpy pandas scikit-learn matplotlib openpyxl
 
-如果仓库中没有 requirements.txt，请使用上面“依赖”小节列出的命令安装必要包。
+4. Run the quick test (built-in TOPSIS example):
 
-4. 运行快速测试（推荐）：
+   python quicktest.py
 
-   python topsis.py
+The `topsis.py` example runs without requiring any external data files; it prints AHP/entropy/TOPSIS results and saves radar charts (radar_group*.png) to the working directory.
 
-该脚本包含内置示例数据，会：
-- 计算 AHP 主观权重、熵权客观权重与乘法融合权重；
-- 运行 TOPSIS 对样例方案打分并打印排名；
-- 生成并保存若干雷达图 (radar_group*.png)，并在窗口显示可视化结果。
+## Running the HNSW++ (fuzzy retrieval) example
 
-此测试不依赖 Excel 文件或其它外部数据，适合作为“至少包含一个快速测试或示例文件”的证明。
+- `HNSW++-CHA.py` includes a main example that reads an Excel file. Edit the `excel_path` variable in the `if __name__ == "__main__":` section to point to your data file (or to a relative sample if you add one).
+- Install dependency if needed:
 
-## 运行 HNSW++（模糊匹配）示例
+  pip install hnswlib
 
-HNSW++ 示例默认在 `HNSW++-CHA.py` 的 main 段里从 Excel 读取数据：
+- Run:
 
-- 编辑 `excel_path`，将其指向你的数据文件（支持 Excel 格式）。
-- 运行：
+  python "HNSW++-CHA.py"
 
-    python "HNSW++-CHA.py"
+## Running the conditional diffusion generator example (CDMsDDIM.py)
 
-注意：若运行时报错找不到 hnswlib，请先安装 `pip install hnswlib`。
+- `CDMsDDIM.py` contains a runnable example that reads an Excel file for training and then generates completed schemes.
+- Edit the `excel_path` in the `if __name__ == "__main__":` block to point to your data (relative paths recommended).
+- For CPU-only usage, PyTorch without CUDA will be used automatically. For GPU usage, install a CUDA-enabled PyTorch build and ensure a GPU is available.
+- Run:
 
-## 运行扩散生成器示例（CDMsDDIM.py）
+  python CDMsDDIM.py
 
-- 编辑 `CDMsDDIM.py` 中的 `excel_path`，指向你的数据文件（例如 .xlsx、.xlsm）。
-- 如果你没有 GPU 或不想使用 CUDA，脚本会自动选择 CPU（device='cpu'）。若要使用 GPU，请确保安装了带 CUDA 支持的 PyTorch 并且机器上有可用 GPU。
-- 运行：
+Note: Training the diffusion model can be computationally expensive. For quick flow validation you can reduce epochs in the script (for instance, set epochs=1) — this only serves to test the runtime flow, not model performance.
 
-    python CDMsDDIM.py
+## Repository layout (main files)
 
-该脚本会：
-- 读取 Excel 中的方案数据；
-- 构建并训练条件扩散模型（训练参数在脚本中可配置）；
-- 生成若干补全的方案并打印输出；
-- 可以通过 `measure_inference_time` 测量平均推理时间。
+- topsis.py
+- HNSW++-CHA.py
+- CDMsDDIM.py
+- Transformer.py
+- PGM-Index.py
+- README.md
+- quicktest.py
 
-注意：当前示例使用绝对路径（例如 E:\\\\tool\\\\python project\\\\test\\\\钻速机器学习.xlsm）。请修改为仓库内的相对路径或将数据放到合适位置并更新路径以便他人复现。
+## Security & data
 
-## 安全与发布注意事项
+Please do not upload sensitive information (passwords, private keys, API keys, or personal data) to a public repository. If you plan to publish example datasets, prefer small synthetic or anonymized samples.
 
-- 仓库中未包含压缩源码包（如 .zip/.rar/.7z）。
-- 请确保不上传含有敏感信息（密码、私钥、API Key 或个人隐私数据）的数据文件到公共仓库。
-- 若你希望公开示例数据，建议先对数据进行脱敏或仅发布小规模、合成的数据样例。
+## License
 
-## 建议的下一步（可选）
-
-- 添加一个 `examples/` 目录，放置：
-  - 一个小型示例数据文件（例如 `examples/sample_schemes.xlsx`），并修改 HNSW++ 和 CDMsDDIM 的示例代码以默认加载该相对路径；
-  - 一个 `quick_test.py` 脚本，调用 topsis、HNSW++、CDMsDDIM 的小型端到端流程，作为自动化示例；
-  - 一个 `requirements.txt` 文件列出可复现的依赖版本。 
-
-- 将 `excel_path` 等硬编码路径替换为命令行参数或配置文件，便于他人复现与 CI 测试。
-
-## 许可（License）
-
-请在仓库中添加合适的 LICENSE 文件以明确源代码许可（例如 MIT、Apache-2.0 等），如果你愿意将代码开源，请选择并添加许可证。
-
----
-
-如果你希望，我可以：
-
-- 同时为你创建 `requirements.txt`、添加 `examples/sample_schemes.xlsx`（合成小样例）和一个 `quick_test.py` 来满足所有要求的演示；
-- 或者我可以只更新 README（我已完成）并等待你决定是否需要我提交示例数据与测试脚本。
+Add a LICENSE file to indicate how you want to license the code (for example, MIT or Apache-2.0) if you intend to make the repository public.
