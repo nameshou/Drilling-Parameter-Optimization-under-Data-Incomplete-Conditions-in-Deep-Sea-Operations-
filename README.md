@@ -1,20 +1,43 @@
 # Drilling Parameter Optimization under Data-Incomplete Conditions in Deep-Sea Operations
 
-A hybrid framework combining historical case retrieval and conditional generation for drilling-parameter optimization when operational data are incomplete.
+This repository provides a hybrid framework that combines historical case retrieval and conditional generation to support drilling-parameter optimization when operational data are incomplete or partially observed. The code is intended for research and prototyping: it contains retrieval, generative, and multi-criteria evaluation modules along with small example drivers to demonstrate end-to-end flows.
 
-## Overview
+## Highlights
 
-This repository implements three main components:
+- Fuzzy retrieval of historical cases using an HNSW-based multi-branch index to find similar drilling cases under partial observation.
+- Conditional diffusion model that completes missing drilling parameters conditioned on available measurements and retrieved historical cases.
+- Multi-criteria decision and ranking pipeline (AHP + entropy weighting + TOPSIS) for evaluating candidate parameter sets.
+- Lightweight example scripts to run quick tests without large datasets or heavy training.
 
-- `HNSW++-CHA.py` — a fuzzy retrieval module using an HNSW-based multi-branch index to find historical similar cases.
-- `CDMsDDIM.py` — a conditional diffusion generator that completes missing drilling parameters under partially observed conditions.
-- `topsis.py` — a multi-criteria evaluation module (AHP + entropy weighting + TOPSIS) with built-in example data and radar-plot visualization for quick testing.
+## Repository structure (important files)
 
-All source code is provided as individual Python files (no compressed archives included).
+- HNSW++-CHA.py
+  - Fuzzy retrieval module based on HNSW (hnswlib). Builds a multi-branch index for partial/masked queries and retrieves nearest historical cases.
+  - Example usage: edit the `excel_path` variable in the `if __name__ == "__main__"` block to point to your sample Excel file, then run the script.
+
+- CDMsDDIM.py
+  - Conditional diffusion-based model that imputes/completes missing drilling parameters under partially observed conditions.
+  - Uses PyTorch for model definition, training, and inference. The file contains a runnable example that reads data from Excel, trains (or loads) a model, and generates completed schemes.
+  - Notes: training can be expensive. For quick validation set epochs to a small value.
+
+- topsis.py
+  - Multi-criteria evaluation utilities combining AHP (Analytic Hierarchy Process), entropy-based weighting, and TOPSIS ranking.
+  - Includes a built-in example dataset and a radar-plot visualization to test the pipeline without external data.
+
+- Transformer.py
+  - Transformer-based utilities and model components used as building blocks for conditional modeling (helper code used by CDMsDDIM or other experiments).
+
+- PGM-Index.py
+  - An experimental learned-index (PGM-index) utility used for efficient lookup or auxiliary indexing in some retrieval flows.
+
+- quick_experiment.py and quicktest.py
+  - Small driver scripts that run short end-to-end checks (TOPSIS quick test, example retrieval flows). Use these to verify environment and dependencies.
+
+- README.md (this file)
 
 ## Dependencies
 
-Recommended to use a virtual environment. Core Python packages:
+Recommended to use a Python virtual environment. Core packages used across scripts:
 
 - numpy
 - pandas
@@ -24,16 +47,30 @@ Recommended to use a virtual environment. Core Python packages:
 
 Optional / for specific features:
 
-- torch (for CDMsDDIM training / inference; choose the build appropriate for your CUDA/CPU environment)
-- hnswlib (for running HNSW++-based fuzzy retrieval)
+- torch (PyTorch) — required for training or running the diffusion model in CDMsDDIM.py
+- hnswlib — required to run the HNSW++ retrieval examples
 
-Example install commands:
+Install example:
 
 pip install numpy pandas scikit-learn matplotlib openpyxl
-pip install torch      # choose appropriate build for CUDA/CPU
-pip install hnswlib    # if you want to run HNSW++ examples
+# For model training / inference, install a matching PyTorch build for your platform (CPU or CUDA):
+# See https://pytorch.org for the appropriate command
+pip install torch
+# If you want to run the HNSW++ examples
+pip install hnswlib
 
-## Quick start / Quick test
+## Data format / expected inputs
+
+Most example scripts read from Excel (.xlsx) files. Expected layout is a tabular dataset where each row is a historical case and columns correspond to engineering/drilling parameters and measured responses. Typical columns used across scripts include (but are not limited to):
+
+- identifiers (case ID, timestamp)
+- input / control parameters (e.g., weight on bit, rotary speed, pump rate)
+- measured observations and responses (e.g., penetration rate, torque, vibration metrics)
+- mask or missing-value indicators (NaN is used to indicate missing values in examples)
+
+Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts (HNSW++-CHA.py, CDMsDDIM.py, topsis.py) to see how `excel_path` and column names are read. Modify those variables to match the column names in your Excel file.
+
+## Quick start
 
 1. Clone the repository:
 
@@ -46,46 +83,39 @@ pip install hnswlib    # if you want to run HNSW++ examples
    # Linux / macOS
    source .venv/bin/activate
    # Windows (PowerShell)
-   .\.venv\\Scripts\\Activate.ps1
+   .\.venv\Scripts\Activate.ps1
 
 3. Install dependencies (example):
 
    pip install numpy pandas scikit-learn matplotlib openpyxl
 
-4. Run the quick test (built-in TOPSIS example):
+4. Run the TOPSIS quick test (no external data required):
 
    python quicktest.py
 
-The `topsis.py` example runs without requiring any external data files; it prints AHP/entropy/TOPSIS results and saves radar charts (radar_group*.png) to the working directory.
+5. Run HNSW++ example (if you have hnswlib and a sample Excel file):
 
-## Running the HNSW++ (fuzzy retrieval) example
+   pip install hnswlib
+   # edit HNSW++-CHA.py to set `excel_path` in the main block
+   python "HNSW++-CHA.py"
 
-- `HNSW++-CHA.py` includes a main example that reads an Excel file. Edit the `excel_path` variable in the `if __name__ == "__main__":` section to point to your data file (or to a relative sample if you add one).
-- Install dependency if needed:
+6. Run conditional diffusion example (CDMsDDIM.py):
 
-  pip install hnswlib
+   # install pytorch appropriate for your platform
+   python CDMsDDIM.py
 
-- Run:
+## Notes and best practices
 
-  python "HNSW++-CHA.py"
+- When working with the diffusion model, start with a small number of epochs and a small dataset to ensure the training loop runs correctly before scaling up.
+- Keep your Excel input columns consistent with the example scripts. If your column names differ, change the `read_excel` parsing code in the script or preprocess your data to match expected names.
+- HNSW-based fuzzy retrieval works best when you normalize or standardize feature vectors prior to building the index.
 
-## Running the conditional diffusion generator example (CDMsDDIM.py)
+## Contributing
 
-- `CDMsDDIM.py` contains a runnable example that reads an Excel file for training and then generates completed schemes.
-- Edit the `excel_path` in the `if __name__ == "__main__":` block to point to your data (relative paths recommended).
-- For CPU-only usage, PyTorch without CUDA will be used automatically. For GPU usage, install a CUDA-enabled PyTorch build and ensure a GPU is available.
-- Run:
+Contributions are welcome. If you plan to add features or fix issues, please open an issue describing the change before submitting a pull request so we can discuss design and compatibility.
 
-  python CDMsDDIM.py
+## License & contact
 
-Note: Training the diffusion model can be computationally expensive. For quick flow validation you can reduce epochs in the script (for instance, set epochs=1) — this only serves to test the runtime flow, not model performance.
+This repository does not include an explicit license file. If you intend to reuse the code, please contact the repository owner (nameshou) or add a LICENSE file to clarify permissions.
 
-## Repository layout (main files)
-
-- topsis.py
-- HNSW++-CHA.py
-- CDMsDDIM.py
-- Transformer.py
-- PGM-Index.py
-- README.md
-- quicktest.py
+For questions or help, open an issue or contact the owner via GitHub.
