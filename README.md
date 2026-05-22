@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository provides a hybrid framework that combines historical case retrieval and conditional generation to support drilling-parameter optimization when operational data are incomplete or partially observed in deep-sea environments. It accompanies the manuscript:
+This repository provides a hybrid framework that combines historical case retrieval and conditional generation to support drilling-parameter optimization when operational data are incomplete or partial.
 
 > **A Hybrid Framework Combining Historical Case Retrieval and Conditional Generation for Drilling Parameter Optimization under Data Incomplete Conditions in Deep-Sea Operations**
 >
@@ -56,7 +56,7 @@ Optional / for specific features:
 
 ## Data format / expected inputs
 
-Example scripts read from Excel (.xlsx) files or use synthetic data generated in-program. Expected layout is a tabular dataset where each row is a historical case and columns correspond to engineering/drilling parameters and measured responses:
+Example scripts read from Excel (.xlsx) files or use synthetic data generated in-program. Expected layout is a tabular dataset where each row is a historical case and columns correspond to engineering parameters.
 
 - identifiers (case ID, timestamp)
 - input / control parameters (e.g., weight on bit, rotary speed, pump rate)
@@ -112,6 +112,21 @@ Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts to s
 - Keep your Excel input columns consistent with the example scripts. If your column names differ, change the `read_excel` parsing code or preprocess your data to match expected names.
 - HNSW-based fuzzy retrieval works best when you normalize or standardize feature vectors prior to building the index.
 
+
+## Citation
+
+If you use this code in your research, please cite:
+
+```bibtex
+@article{wang2026hybrid,
+  title={A Hybrid Framework Combining Historical Case Retrieval and Conditional Generation
+         for Drilling Parameter Optimization under Data Incomplete Conditions in Deep-Sea Operations},
+  author={Wang, Linhao and Chen, Xiaojun and Ren, Qiwei and Han, Zelong},
+  journal={Computers \& Geosciences},
+  year={2026},
+  publisher={Elsevier}
+}
+```
 
 ## License
 
