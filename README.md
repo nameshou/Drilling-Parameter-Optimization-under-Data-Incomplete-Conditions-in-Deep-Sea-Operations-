@@ -112,20 +112,6 @@ Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts to s
 - Keep your Excel input columns consistent with the example scripts. If your column names differ, change the `read_excel` parsing code or preprocess your data to match expected names.
 - HNSW-based fuzzy retrieval works best when you normalize or standardize feature vectors prior to building the index.
 
-## Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@article{wang2026hybrid,
-  title={A Hybrid Framework Combining Historical Case Retrieval and Conditional Generation
-         for Drilling Parameter Optimization under Data Incomplete Conditions in Deep-Sea Operations},
-  author={Wang, Linhao and Chen, Xiaojun and Ren, Qiwei and Han, Zelong},
-  journal={Computers \& Geosciences},
-  year={2026},
-  publisher={Elsevier}
-}
-```
 
 ## License
 
