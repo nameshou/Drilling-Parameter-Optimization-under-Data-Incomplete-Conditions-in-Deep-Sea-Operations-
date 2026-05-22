@@ -1,6 +1,21 @@
 # Drilling Parameter Optimization under Data-Incomplete Conditions in Deep-Sea Operations
 
-This repository provides a hybrid framework that combines historical case retrieval and conditional generation to support drilling-parameter optimization when operational data are incomplete or par[...]
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+This repository provides a hybrid framework that combines historical case retrieval and conditional generation to support drilling-parameter optimization when operational data are incomplete or partially observed in deep-sea environments. It accompanies the manuscript:
+
+> **A Hybrid Framework Combining Historical Case Retrieval and Conditional Generation for Drilling Parameter Optimization under Data Incomplete Conditions in Deep-Sea Operations**
+>
+> Linhao Wang, Xiaojun Chen, Qiwei Ren, Zelong Han
+>
+> Institute of Exploration Technology, Chinese Academy of Geological Sciences, Tianjin, China
+
+## Authors
+
+- **Linhao Wang** — Institute of Exploration Technology, Chinese Academy of Geological Sciences, Tianjin, China. ORCID: 0009-0003-3178-9403. E-mail: w1158128023@163.com
+- **Xiaojun Chen** — Institute of Exploration Technology, Chinese Academy of Geological Sciences, Tianjin, China.
+- **Qiwei Ren** — Institute of Exploration Technology, Chinese Academy of Geological Sciences, Tianjin, China.
+- **Zelong Han** — Institute of Exploration Technology, Chinese Academy of Geological Sciences, Tianjin, China. (Corresponding author: 785674682@qq.com)
 
 ## Highlights
 
@@ -11,105 +26,107 @@ This repository provides a hybrid framework that combines historical case retrie
 
 ## Repository structure (important files)
 
-- HNSW++-CHA.py
-  - Fuzzy retrieval module based on HNSW (hnswlib). Builds a multi-branch index for partial/masked queries and retrieves nearest historical cases.
-  - Example usage: edit the `excel_path` variable in the `if __name__ == "__main__"` block to point to your sample Excel file, then run the script.
-
-- CDMsDDIM.py
-  - Conditional diffusion-based model that imputes/completes missing drilling parameters under partially observed conditions.
-  - Uses PyTorch for model definition, training, and inference. The file contains a runnable example that reads data from Excel, trains (or loads) a model, and generates completed schemes.
-  - Notes: training can be expensive. For quick validation set epochs to a small value.
-
-- topsis.py
-  - Multi-criteria evaluation utilities combining AHP (Analytic Hierarchy Process), entropy-based weighting, and TOPSIS ranking.
-  - Includes a built-in example dataset and a radar-plot visualization to test the pipeline without external data.
-
-- Transformer.py
-  - Transformer-based utilities and model components used as building blocks for conditional modeling (helper code used by CDMsDDIM or other experiments).
-
-- PGM-Index.py
-  - An experimental learned-index (PGM-index) utility used for efficient lookup or auxiliary indexing in some retrieval flows.
-
-- quicktest.py
-  - Small driver script that runs short end-to-end checks (TOPSIS quick test, example retrieval flows). Use this to verify environment and dependencies. (quick_experiment.py deprecated - see note below)
-
-- README.md (this file)
+- **HNSW++-CHA.py** — Fuzzy retrieval module based on HNSW (hnswlib). Builds a multi-branch index for partial/masked queries and retrieves nearest historical cases.
+- **CDMsDDIM.py** — Conditional diffusion-based model that imputes/completes missing drilling parameters under partially observed conditions. Uses PyTorch for model definition, training, and inference.
+- **topsis.py** — Multi-criteria evaluation utilities combining AHP (Analytic Hierarchy Process), entropy-based weighting, and TOPSIS ranking. Includes a built-in example dataset and radar-plot visualization.
+- **Transformer.py** — Transformer-based model for drilling time prediction with sliding window.
+- **PGM-Index.py** — Learned-index (PGM-index) utility for efficient exact-match lookup.
+- **quicktest.py** — Driver script that runs short end-to-end checks of all five modules. Use this to verify environment and dependencies.
+- **requirements.txt** — Python package dependencies.
+- **LICENSE** — MIT License.
 
 ## Data source
 
-The dataset and related materials used in this project are available from the OGS research repository: https://ricerca.ogs.it/handle/20.500.14083/44943
+The dataset and related materials used in this project are available from the OGS research repository: <https://ricerca.ogs.it/handle/20.500.14083/44943>
 
 ## Dependencies
 
-Recommended to use a Python virtual environment. Core packages used across scripts:
+Install all required packages:
 
-- numpy
-- pandas
-- scikit-learn
-- matplotlib
-- openpyxl
+```bash
+pip install -r requirements.txt
+```
+
+Core packages: numpy, pandas, scikit-learn, matplotlib, openpyxl
 
 Optional / for specific features:
-
-- torch (PyTorch) — required for training or running the diffusion model in CDMsDDIM.py
-- hnswlib — required to run the HNSW++ retrieval examples
-
-Install example:
-
-pip install numpy pandas scikit-learn matplotlib openpyxl
-# For model training / inference, install a matching PyTorch build for your platform (CPU or CUDA):
-# See https://pytorch.org for the appropriate command
-pip install torch
-# If you want to run the HNSW++ examples
-pip install hnswlib
+- **torch (PyTorch)** — required for training or running the diffusion model in CDMsDDIM.py and Transformer.py
+- **hnswlib** — required to run the HNSW++ retrieval examples
+- **pympler** — used by PGM-Index.py for memory measurement
 
 ## Data format / expected inputs
 
-Most example scripts read from Excel (.xlsx) files. Expected layout is a tabular dataset where each row is a historical case and columns correspond to engineering/drilling parameters and measured [...]
+Example scripts read from Excel (.xlsx) files or use synthetic data generated in-program. Expected layout is a tabular dataset where each row is a historical case and columns correspond to engineering/drilling parameters and measured responses:
 
 - identifiers (case ID, timestamp)
 - input / control parameters (e.g., weight on bit, rotary speed, pump rate)
-- measured observations and responses (e.g., penetration rate, torque, vibration metrics)
-- mask or missing-value indicators (NaN is used to indicate missing values in examples)
+- measured observations and responses (e.g., penetration rate, torque, viscosity metrics)
+- NaN is used to indicate missing values
 
-Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts (HNSW++-CHA.py, CDMsDDIM.py, topsis.py) to see how `excel_path` and column names are read. Modify those variables to mat[...]
+Tip: Inspect the `if __name__ == "__main__":` blocks in the example scripts to see how `excel_path` and column names are read.
 
 ## Quick start
 
 1. Clone the repository:
 
+   ```bash
    git clone https://github.com/nameshou/Drilling-Parameter-Optimization-under-Data-Incomplete-Conditions-in-Deep-Sea-Operations-.git
    cd Drilling-Parameter-Optimization-under-Data-Incomplete-Conditions-in-Deep-Sea-Operations-
+   ```
 
 2. (Optional) Create and activate a virtual environment:
 
+   ```bash
    python -m venv .venv
    # Linux / macOS
    source .venv/bin/activate
    # Windows (PowerShell)
    .\.venv\Scripts\Activate.ps1
+   ```
 
-3. Install dependencies (example):
+3. Install dependencies:
 
-   pip install numpy pandas scikit-learn matplotlib openpyxl
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-4. Run the TOPSIS quick test (no external data required):
+4. Run the quick test (synthetic data, no external files required):
 
+   ```bash
    python quicktest.py
+   ```
 
-5. Run HNSW++ example (if you have hnswlib and a sample Excel file):
+5. Run individual modules with your own data by placing a `sample_data.xlsx` file in the repository root, then:
 
-   pip install hnswlib
-   # edit HNSW++-CHA.py to set `excel_path` in the main block
+   ```bash
+   python topsis.py
    python "HNSW++-CHA.py"
-
-6. Run conditional diffusion example (CDMsDDIM.py):
-
-   # install pytorch appropriate for your platform
+   python "PGM-Index.py"
    python CDMsDDIM.py
+   python Transformer.py
+   ```
 
 ## Notes and best practices
 
 - When working with the diffusion model, start with a small number of epochs and a small dataset to ensure the training loop runs correctly before scaling up.
-- Keep your Excel input columns consistent with the example scripts. If your column names differ, change the `read_excel` parsing code in the script or preprocess your data to match expected name[...]
+- Keep your Excel input columns consistent with the example scripts. If your column names differ, change the `read_excel` parsing code or preprocess your data to match expected names.
 - HNSW-based fuzzy retrieval works best when you normalize or standardize feature vectors prior to building the index.
+
+## Citation
+
+If you use this code in your research, please cite:
+
+```bibtex
+@article{wang2026hybrid,
+  title={A Hybrid Framework Combining Historical Case Retrieval and Conditional Generation
+         for Drilling Parameter Optimization under Data Incomplete Conditions in Deep-Sea Operations},
+  author={Wang, Linhao and Chen, Xiaojun and Ren, Qiwei and Han, Zelong},
+  journal={Computers \& Geosciences},
+  year={2026},
+  publisher={Elsevier}
+}
+```
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
